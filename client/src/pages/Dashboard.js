@@ -7,7 +7,7 @@ const baseURL = process.env.REACT_APP_API_URL + '/technologies';
 const columns = [
     {
         title: "Technology",
-        dataIndex: "title",
+        dataIndex: "technology",
     },
     {
         title: "Description",
