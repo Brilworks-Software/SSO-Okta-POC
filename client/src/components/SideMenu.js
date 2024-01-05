@@ -20,7 +20,7 @@ function SideMenu() {
                 }
                 items={[
                     { label: "Home", key: "/", icon: <HomeOutlined /> },
-                    { label: "Dashboard", key: "/dashboard", icon: <DashboardOutlined /> },
+//                    { label: "Dashboard", key: "/dashboard", icon: <DashboardOutlined /> },
                     { label: "Logout", key: "/logout", onClick: logout, icon: <LogoutOutlined /> }
                 ]}>
             </Menu>

@@ -14,7 +14,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        System.out.println("in configure..");
         httpSecurity
                 .headers().frameOptions().disable()
                 .and()
