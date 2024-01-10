@@ -33,14 +33,16 @@ public class AuthService {
     public SSOUserDTO validateTokenAndGetSSOUser(SSOAuthenticationDTO ssoAuthenticationDTO) {
         try {
             SSOConfigurationDto ssoConfiguration = getSsoConfiguration();
-            if (ssoConfiguration != null && ssoAuthenticationDTO.getAccessToken() != null) {
-                return getOrCreateUserFromSSO(ssoAuthenticationDTO.getAccessToken(), ssoAuthenticationDTO.getEmail(), ssoConfiguration.getIssuerUrl());
-            } else {
+            if (ssoConfiguration == null || ssoAuthenticationDTO.getAccessToken() == null) {
                 throw new ResourceNotFoundException("SSO Configuration not found!");
             }
+
+            return getOrCreateUserFromSSO(ssoAuthenticationDTO.getAccessToken(), ssoAuthenticationDTO.getEmail(), ssoConfiguration.getIssuerUrl());
+
+
         } catch (Exception e) {
             log.debug("Exception while validating sso token {}", e.getMessage());
-            throw new ResourceNotFoundException("User not found!");
+            throw new ResourceNotFoundException("User not found.");
         }
     }
 
@@ -56,11 +58,8 @@ public class AuthService {
             if (response != null && response.getStatus() == 200) {
                 JSONObject responseObj = response.getBody().getObject();
                 if (responseObj != null && responseObj.getBoolean("email_verified")) {
-                    String userEmail = responseObj.getString("email");
-                    String fName = responseObj.getString("given_name");
-                    String lName = responseObj.getString("family_name");
-                    SSOUserDTO ssoUserDTO = new SSOUserDTO(fName, lName, userEmail);
-                    if(email.equalsIgnoreCase(userEmail))
+                    SSOUserDTO ssoUserDTO = buildUserDataFromResponse(responseObj);
+                    if(email.equalsIgnoreCase(ssoUserDTO.getUserEmail()))
                         return userService.getOrCreateUserFromSSOUser(ssoUserDTO);
                 }
             }
@@ -69,6 +68,13 @@ public class AuthService {
             throw new ResourceNotFoundException("User not found!");
         }
         return null;
+    }
+
+    private SSOUserDTO buildUserDataFromResponse(JSONObject responseObj) {
+        String userEmail = responseObj.getString("email");
+        String fName = responseObj.getString("given_name");
+        String lName = responseObj.getString("family_name");
+        return new SSOUserDTO(fName, lName, userEmail);
     }
 
 }
